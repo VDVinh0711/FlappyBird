@@ -1,5 +1,5 @@
-export const BirdState = {
+export const GameState = {
     WAITING: 'waiting',
     PLAYING: 'playing',
-    DIE: 'die'
+    LOSE: 'die'
 }

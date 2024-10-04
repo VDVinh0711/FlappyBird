@@ -1,6 +1,9 @@
 
 import { Container } from "pixi.js";
 import { Obstacle } from "./Obstacle.js";
+import { GameManager } from "../gameManager.js";
+import { ScoreManager } from "../scoreManager.js";
+import { GameState } from "../../GameState.js";
 export default class ObstacleManager extends Container
 {
     constructor(gameMono)
@@ -14,26 +17,43 @@ export default class ObstacleManager extends Container
         
     }
 
-    spawmObstacle()
+    spawmObstacle(deltaTime)
     {
-        let newObs = new Obstacle(this.gameMono,2);
-        this.obs.push(newObs);
-        this.addChild(newObs);
+
+        if(GameManager.gameState == GameState.WAITING) return;
+        this.currentime+= deltaTime;
+        if(this.currentime >= this.timeSpawm)
+        {
+           
+            this.currentime = 0;
+            let newObs = new Obstacle();
+            newObs.init(this.gameMono.screen.width, this.gameMono.screen.height);
+            this.obs.push(newObs);
+            this.addChild(newObs);
+        }
+
+        
     }
 
 
     update(deltaTime)
     {
-        this.currentime+= deltaTime;
-        if(this.currentime >= this.timeSpawm)
-        {
-            this.currentime = 0;
-            this.spawmObstacle();
-            console.log("spawm");
-        }
+
+        if(GameManager.gameState == GameState.WAITING || GameManager.gameState == GameState.LOSE) return;
+
+        this.spawmObstacle(deltaTime);
+        
         for(let i =this.obs.length-1 ;i>= 0 ;i--)
         {
+
+            //update obs
             this.obs[i].update(deltaTime);
+
+            //addscore
+            
+            this.obsGoPassBird(this.gameMono.bird , this.obs[i]);
+
+            //check des obs
             if(this.obs[i].x <= 0- this.gameMono.screen.width)
             {
                this.deSpawmObstacle(i);
@@ -44,6 +64,7 @@ export default class ObstacleManager extends Container
 
     }
 
+    
     deSpawmObstacle(index)
     {
         let obs = this.obs[index];
@@ -51,15 +72,21 @@ export default class ObstacleManager extends Container
         this.obs.splice(index,1);
     }
 
+    obsGoPassBird(bird,obs)
+    {
+       
+        let birdBound = bird.getBounds();
+        let topObsBound = obs.topObs.getBounds();
+        if( birdBound.maxX !=  Math.floor(topObsBound.minX ) ) return;
+        ScoreManager.addScore();
+    }
     checkColision(bird)
     {
         this.obs.forEach(obstacle => {
             let isColi = this.coliWithBottom(bird,obstacle.bottomObs) || this.colisWithTopObs(bird,obstacle.topObs);
             if(isColi)
             {
-
-                //emit event when coli
-                console.log("coli");
+                GameManager.onLose();
             }
         });
     }

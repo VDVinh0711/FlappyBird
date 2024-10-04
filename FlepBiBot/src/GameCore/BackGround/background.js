@@ -1,5 +1,4 @@
 import { Container, Graphics } from "pixi.js"
-import {addTrees} from './Trees.js'
 export default class background  extends Container {
     constructor(gameMono) {
         super();
@@ -15,8 +14,7 @@ export default class background  extends Container {
     setup()
     {
         this.createStar();
-        this.createGround();
-        this.createTree();
+       // this.createGround();
     }
 
     createStar() {
@@ -26,25 +24,17 @@ export default class background  extends Container {
             const y = (i * 0.9382 * this.gameMono.screen.height) % this.gameMono.screen.height;
             const radius = 2 + Math.random() * 3;
             const rotation = Math.random() * Math.PI * 2;
-            // Draw the star onto the graphics object.
             graphicStart.star(x, y, 5, radius, 0, rotation).fill({ color: 0xffdf00, alpha: radius / 5 });
         }
         this.addChild(graphicStart);
 
     }
 
-
     createGround()
     {
         let graphicGround = new Graphics();
         graphicGround.rect(0,this.gameMono.screen.height -  40 , this.gameMono.screen.width, this.gameMono.screen.height).fill({color : 'black'});
         this.addChild(graphicGround);
-    }
-
-
-    createTree()
-    {
-      //  addTrees(this,this.trees,this.gameMono.screen.width, this.gameMono.screen.height);
     }
 
     update(deltaTime)

@@ -1,18 +1,18 @@
 import { Application } from "pixi.js";
 import background from './BackGround/background.js';
 import ObstacleManager from "./Obstacle/obstacleManager.js";
+import { PlayerController } from "./Player/playercontroller.js";
 
 import { Bird } from "./Player/bird.js";
+import { GameManager } from "./gameManager.js";
 export class GameMonoBehavior extends Application {
     constructor() {
         super();
-        this.isLose = false;
-        this.isWin = false;
+        
         
     }
 
     async init(options = {}) {
-        // Gọi phương thức init của lớp cha (Application)
         await super.init(options);
         document.body.appendChild(this.canvas);
         this.setup();
@@ -21,9 +21,11 @@ export class GameMonoBehavior extends Application {
 
     setup() {
 
-         //setupBackground
-         this.bg = new background(this);
-         this.stage.addChild(this.bg);
+       
+       
+        //setupBackground
+        this.bg = new background(this);
+        this.stage.addChild(this.bg);
  
         //setup OBS
         this.obstacles = new ObstacleManager(this);
@@ -36,6 +38,7 @@ export class GameMonoBehavior extends Application {
         this.bird = new Bird(this);
         this.stage.addChild(this.bird);
         
+        this.playercontroller = new PlayerController(this,this.bird);
         //Setup Loop
         this.ticker.add((time) => {
             this.gameUpDate(time.deltaTime);
